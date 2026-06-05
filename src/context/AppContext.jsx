@@ -11,14 +11,32 @@ const INITIAL_LOANS = [
   { id:'L-2406', name:'Daniel Kimani', initials:'DK', occ:'Formal employee', county:'Nairobi', amount:75000, purpose:'Medical emergency', status:'review', score:55, date:'2025-01-14', children:0, harvest:false, income:'high', agentRun:true },
 ]
 
+export const OFFICER_ACCOUNTS = [
+  { id:'off_001', name:'Sarah Wambui',   email:'sarah@ujima.co.ke',  password:'officer123', role:'officer', initials:'SW', title:'Senior Loan Officer' },
+  { id:'off_002', name:'James Otieno',   email:'james@ujima.co.ke',  password:'officer123', role:'officer', initials:'JO', title:'Loan Officer' },
+]
+
+export const APPLICANT_ACCOUNTS = [
+  { id:'app_001', name:'Grace Achieng',  email:'grace@email.com',    password:'member123',  role:'applicant', initials:'GA', phone:'+254712345678' },
+  { id:'app_002', name:'Peter Otieno',   email:'peter@email.com',    password:'member123',  role:'applicant', initials:'PO', phone:'+254723456789' },
+]
+
 export function AppProvider({ children }) {
   const [loans, setLoans] = useState(INITIAL_LOANS)
   const [toast, setToast] = useState(null)
-  const [currentUser] = useState({ name: 'Sarah Wambui', role: 'Loan Officer', initials: 'SW' })
+  const [authUser, setAuthUser] = useState(null)
 
-  const showToast = useCallback((msg, type='success') => {
+  const showToast = useCallback((msg, type = 'success') => {
     setToast({ msg, type })
     setTimeout(() => setToast(null), 3200)
+  }, [])
+
+  const login = useCallback((user) => {
+    setAuthUser(user)
+  }, [])
+
+  const logout = useCallback(() => {
+    setAuthUser(null)
   }, [])
 
   const addLoan = useCallback((loan) => {
@@ -32,8 +50,17 @@ export function AppProvider({ children }) {
     setLoans(prev => prev.map(l => l.id === id ? { ...l, ...updates } : l))
   }, [])
 
+  const myLoans = authUser?.role === 'applicant'
+    ? loans.filter(l => l.applicantId === authUser.id || l.name === authUser.name)
+    : loans
+
   return (
-    <Ctx.Provider value={{ loans, addLoan, updateLoan, toast, showToast, currentUser }}>
+    <Ctx.Provider value={{
+      loans, myLoans, addLoan, updateLoan,
+      toast, showToast,
+      authUser, login, logout,
+      currentUser: authUser,
+    }}>
       {children}
     </Ctx.Provider>
   )
