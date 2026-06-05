@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { LayoutDashboard, FileText, PlusCircle, Users, Bot, BarChart2, Settings } from 'lucide-react'
-import { useApp } from '../context/AppContext'
+import { useApp } from '../../context/AppContext'
 
 const NAV = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/' },
